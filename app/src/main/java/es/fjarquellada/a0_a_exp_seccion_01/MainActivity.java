@@ -10,6 +10,8 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Button btnShow;
+    private Button btnGoCall;
+
     private static final String GREETING = "Hola que ase tú!!";
 
     @Override
@@ -19,6 +21,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.btnShow = (Button)findViewById(R.id.btnShow);
         this.btnShow.setOnClickListener(this);
+
+        this.btnGoCall = (Button) findViewById(R.id.btnGoCall);
+        this.btnGoCall.setOnClickListener(this);
     }
 
 
@@ -32,11 +37,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void goToThirdActivity(){
+        Intent intent = new Intent(MainActivity.this, ThirdActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onClick(View v) {
         if( v.getId() == this.btnShow.getId()){
             Toast.makeText(this, "Me has clicado", Toast.LENGTH_LONG).show();
             this.goToSecondActivity();
+        }else if(v.getId() == this.btnGoCall.getId()){
+            this.goToThirdActivity();
         }
     }
 }

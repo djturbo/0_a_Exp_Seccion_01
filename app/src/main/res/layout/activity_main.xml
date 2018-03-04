@@ -24,4 +24,14 @@
         android:background="@color/colorPrimaryDark"
         android:text="Show Toast"
         android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/btnGoCall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnShow"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="#ffffff"
+        android:text="Go Call" />
 </RelativeLayout>
