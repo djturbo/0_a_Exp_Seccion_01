@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +16,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class ThirdActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private static final String TAG = "ThirdActivity";
     private static final int PHONE_CALL_CODE = 100;
 
     private EditText editTextPhone;
@@ -47,13 +48,50 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
             String phone = this.editTextPhone.getText().toString();
             /* Se comprueba la versión del SDK de Android que se está ejecutando */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_CODE);
+                // Comprobar si ha aceptado o nunca se le ha preguntado
+                if(checkPermission(Manifest.permission.CALL_PHONE)){
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+phone));
+                    startActivity(intent);
+                }else{
+                    // Si ha denegado, o es la primera vez que se le pregunta
+                    if(!shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)){
+                        // no se le ha preguntado
+                        requestPermissions(new String[]{ Manifest.permission.CALL_PHONE }, PHONE_CALL_CODE);
+                    }else{
+                        // Ha denegado
+                        Toast.makeText(this, "Usted denegó los permisos de llamada", Toast.LENGTH_LONG).show();
+                        Intent intentSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intentSettings.addCategory(Intent.CATEGORY_DEFAULT);
+                        intentSettings.setData(Uri.parse("package:"+ getPackageName()));
+                        intentSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intentSettings.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        intentSettings.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
+                        startActivity(intentSettings);
+
+                    }
+                }
+
                 // this.doCallWithNewerVersionsOfPhones(phone);
             } else {
                 this.doCallWithOlderVersionsOfPhones(phone);
             }
         }
     }
+
+    private void onClickWebButton(){
+        String url = this.editTextWeb.getText().toString();
+
+        if(!"".equals(url)){
+            // Intent intentWeb = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+url));
+            Intent intentWeb = new Intent();
+            intentWeb.setAction(Intent.ACTION_VIEW);
+            intentWeb.setData(Uri.parse("http://"+url));
+
+            startActivity(intentWeb);
+        }
+    }
+
 
     /**
      * COMPRUEBA SI EL PERMISO ESTÁ PRESENTE EN EL MANIFEST
@@ -121,7 +159,7 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
         }else if(this.imageButtonPhone.getId() == id){
             onClickPhoneButton();
         }else if(this.imageButtonWeb.getId() == id) {
-
+            this.onClickWebButton();
         }
 
     }
