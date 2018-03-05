@@ -49,6 +49,41 @@
             android:layout_alignBottom="@+id/editTextWeb"
             android:layout_alignStart="@+id/imageButtonPhone"
             app:srcCompat="@android:drawable/ic_menu_view" />
+
+        <Button
+            android:id="@+id/btnShowContacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextWeb"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="27dp"
+            android:text="Contacts" />
+
+        <EditText
+            android:id="@+id/editTextMail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/editTextWeb"
+            android:layout_centerVertical="true"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <ImageButton
+            android:id="@+id/imageButtonMail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/editTextMail"
+            android:layout_alignEnd="@+id/imageButtonWeb"
+            android:background="@android:color/transparent"
+            app:srcCompat="@android:drawable/sym_action_email" />
+
+        <Button
+            android:id="@+id/btnPhoneCall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextMail"
+            android:layout_centerHorizontal="true"
+            android:text="Call" />
     </RelativeLayout>
 
 
