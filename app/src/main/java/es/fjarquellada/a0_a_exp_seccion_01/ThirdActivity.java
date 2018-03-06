@@ -1,8 +1,10 @@
 package es.fjarquellada.a0_a_exp_seccion_01;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -16,9 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class ThirdActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ThirdActivity";
     private static final int PHONE_CALL_CODE = 100;
+    private static final int PICTURE_FROM_CAMERA = 50;
 
     private EditText editTextPhone;
     private EditText editTextWeb;
@@ -36,6 +41,9 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_third);
+
+        /** Mostrar flecha volver */
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.editTextPhone  = findViewById(R.id.editTextPhone);
         this.editTextWeb    = findViewById(R.id.editTextWeb);
@@ -121,13 +129,48 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
 
     private void sendCompleteMail() {
         String mail = this.editTextMail.getText().toString();
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mail));
-        intent.setType("plain/text");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Mail's title");
-        intent.putExtra(Intent.EXTRA_TEXT, "Hola ke ase me da un besito o ke ase tu");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"fj.arquellada@gmail.com", "djturbo2002@gmail.com"});
 
-        startActivity(intent);
+
+        try
+        {
+            Intent gmailIntent = new Intent(Intent.ACTION_SEND);
+            gmailIntent.setType("text/html");
+
+            final PackageManager pm = getPackageManager();
+            final List<ResolveInfo> matches = pm.queryIntentActivities(gmailIntent, 0);
+            String gmailActivityClass = null;
+
+            for (final ResolveInfo info : matches){
+                if (info.activityInfo.packageName.equals("com.google.android.gm")){
+                    gmailActivityClass = info.activityInfo.name;
+
+                    if (gmailActivityClass != null && !gmailActivityClass.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+
+            gmailIntent.setClassName("com.google.android.gm", gmailActivityClass);
+            gmailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "yourmail@gmail.com" });
+            gmailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+            gmailIntent.putExtra(Intent.EXTRA_CC, "cc@gmail.com"); // if necessary
+            gmailIntent.putExtra(Intent.EXTRA_TEXT, "Email message");
+            gmailIntent.setData(Uri.parse("yourmail@gmail.com"));
+            startActivity(gmailIntent);
+            /* O se puede quitar el setClassName y usrar lo siguiente */
+            // startActivity(Intent.createChooser(gmailIntent, "Seleccione un cliente de correo");
+
+        }catch(Exception e){
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.putExtra(Intent.EXTRA_EMAIL, new String[] { "yourmail@gmail.com" });
+            i.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+            i.putExtra(Intent.EXTRA_CC, "cc@gmail.com"); // if necessary
+            i.putExtra(Intent.EXTRA_TEXT, "Email message");
+            i.setType("plain/text");
+            startActivity(i);
+        }
+
+
     }
 
     /**
@@ -183,6 +226,29 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
         startActivity(intent);
     }
 
+    private void openCamera(){
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        startActivityForResult(intent, PICTURE_FROM_CAMERA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+            case PICTURE_FROM_CAMERA:
+                if(resultCode == Activity.RESULT_OK) {
+                    String result = data.toUri(0);
+                    Toast.makeText(this, "Foto tomada: "+result, Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -210,9 +276,9 @@ public class ThirdActivity extends AppCompatActivity implements View.OnClickList
         final int id = v.getId();
 
         if(this.imageButtonCamera.getId() == id){
-
+            this.openCamera();
         }else if(this.imageButtonPhone.getId() == id){
-            onClickPhoneButton();
+            this.onClickPhoneButton();
         }else if(this.imageButtonWeb.getId() == id) {
             this.onClickWebButton();
         }else if(imageButtonMail.getId() == id){

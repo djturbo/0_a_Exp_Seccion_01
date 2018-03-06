@@ -19,6 +19,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** Cargar icono en el action bar */
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_rabbit);
+
         this.btnShow = (Button)findViewById(R.id.btnShow);
         this.btnShow.setOnClickListener(this);
 
